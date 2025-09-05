@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countries Bubble Chart and Table</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Countries Bubble Chart and Table</h1>
+        <div class="mb-4">
+            <label for="category" class="mr-2">Select Metric:</label>
+            <select id="category" class="border p-2 rounded">
+                <optgroup label="By Country">
+                    <option value="population">Population Size</option>
+                    <option value="borders">Number of Borders</option>
+                    <option value="timezones">Number of Timezones</option>
+                    <option value="languages">Number of Languages</option>
+                </optgroup>
+                <optgroup label="By Region">
+                    <option value="region_countries">Number of Countries in Region</option>
+                    <option value="region_timezones">Number of Unique Timezones in Region</option>
+                </optgroup>
+            </select>
+        </div>
+        <svg id="chart" width="800" height="500"></svg>
+        <table id="data-table" class="w-full mt-4 border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border border-gray-300 p-2">Name</th>
+                    <th class="border border-gray-300 p-2">Value</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { categorizeData } from './src/data.js';
+
+        // Load data once and store in memory
+        let countriesData = null;
+        d3.json("data/countries.json").then(data => {
+            countriesData = data;
+            // Initial render
+            updateVisualizations("population");
+        }).catch(error => {
+            console.error("Error loading JSON:", error);
+            alert("Failed to load data/countries.json. Ensure the file is in the correct directory.");
+        });
+
+        // Update both chart and table
+        function updateVisualizations(category) {
+            if (!countriesData) {
+                console.error("Data not loaded yet");
+                return;
+            }
+
+            const chartData = categorizeData(countriesData, category);
+
+            // Update bubble chart
+            updateChart(chartData);
+
+            // Update table
+            updateTable(chartData);
+        }
+
+        // Update bubble chart
+        function updateChart(chartData) {
+            const svg = d3.select("#chart")
+                .attr("width", 800)
+                .attr("height", 500);
+
+            const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+            const width = +svg.attr("width") - margin.left - margin.right;
+            const height = +svg.attr("height") - margin.top - margin.bottom;
+
+            const g = svg.selectAll(".chart-group").data([null]).join("g")
+                .attr("class", "chart-group")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Create pack layout
+            const pack = d3.pack()
+                .size([width, height])
+                .padding(3);
+
+            // Prepare hierarchical data
+            const root = d3.hierarchy({ children: chartData })
+                .sum(d => d.value || 0);
+
+            // Compute layout
+            const nodes = pack(root).leaves();
+
+            // Update bubbles
+            g.selectAll(".bubble")
+                .data(nodes, d => d.data.name)
+                .join("circle")
+                .attr("class", "bubble")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", d => d.r)
+                .attr("fill", "steelblue")
+                .attr("fill-opacity", 0.6)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 0.5);
+
+            // Update labels
+            g.selectAll(".label")
+                .data(nodes, d => d.data.name)
+                .join("text")
+                .attr("class", "label")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10px")
+                .attr("fill", "#000")
+                .text(d => d.data.name);
+        }
+
+        // Update jQuery table
+        function updateTable(chartData) {
+            const $tbody = $("#data-table tbody");
+            $tbody.empty(); // Clear existing rows
+            $.each(chartData, function(i, d) {
+                $("<tr>")
+                    .append($("<td>").addClass("border border-gray-300 p-2").text(d.name))
+                    .append($("<td>").addClass("border border-gray-300 p-2").text(d.value))
+                    .appendTo($tbody);
+            });
+        }
+
+        // Update on dropdown change
+        d3.select("#category").on("change", function() {
+            updateVisualizations(this.value);
+        });
+    </script>
+</body>
+</html>
