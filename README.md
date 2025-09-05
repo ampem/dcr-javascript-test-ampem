@@ -40,7 +40,7 @@ They should only be allowed to pick one plot point at a time, but also be allowe
 
 ## Exercises
 
-### Exercise 1 - Form and chart
+### Exercise 1 - Form and chart (complete)
 
 Please create a basic form for the user to make and update their selection, as described above. 
 
@@ -48,10 +48,19 @@ Style as you feel appropriate, you may use any library to assist.
 
 Plot the selected criteria on a "bubble" chart.
  
-### Exercise 2 - Display as a table
+### Exercise 2 - Display as a table (complete)
 
 Underneath the chart display the same data as shown in the chart in a table.
 
-### Exercise 3 - Extended information
+### Exercise 3 - Extended information (incomplete)
 
 When hovering over a bubble display a pop-up with more information about that country/region from the JSON data.
+
+### Running the project with docker compose
+
+```bash
+docker compose build
+docker compose up
+```
+
+The chart can then be viewed at (http://localhost:8080)[http://localhost:8080]
