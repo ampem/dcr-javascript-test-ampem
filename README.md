@@ -63,4 +63,4 @@ docker compose build
 docker compose up
 ```
 
-The chart can then be viewed at [http://localhost:8080](http://localhost:8080)
+The chart can then be viewed at [http://localhost:8000](http://localhost:8000)
