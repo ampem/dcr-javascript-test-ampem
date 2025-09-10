@@ -1,7 +1,7 @@
 export function categorizeData(data, category) {
   function getCode(d) {
     if (!d) return 'N/A';
-    return d.alpha3Code || d.cioc || d.alpha2Code || (d.name ? String(d.name).slice(0,3).toUpperCase() : 'N/A');
+    return d.alpha3Code || (d.name ? String(d.name).slice(0,3).toUpperCase() : 'N/A');
   }
 
   function countryMetadata(d) {

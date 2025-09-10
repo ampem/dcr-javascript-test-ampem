@@ -65,7 +65,7 @@ describe('categorizeData', () => {
     expect(result).toEqual([
       { short_name: 'CTA', long_name: 'Country A', value: 1000000, metadata: { total_population: 1000000, languages: ['Lang1','Lang2'], timezones: ['UTC+1','UTC+2'] } },
       { short_name: 'CTA2', long_name: 'Country A2', value: 250000, metadata: { total_population: 250000, languages: ['Lang5'], timezones: ['UTC+1'] } },
-      { short_name: 'CB', long_name: 'Country B', value: 500000, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
+      { short_name: 'COU', long_name: 'Country B', value: 500000, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
     ]);
   });
 
@@ -74,7 +74,7 @@ describe('categorizeData', () => {
     expect(result).toEqual([
       { short_name: 'CTA', long_name: 'Country A', value: 2, metadata: { total_population: 1000000, languages: ['Lang1','Lang2'], timezones: ['UTC+1','UTC+2'] } },
       { short_name: 'CTA2', long_name: 'Country A2', value: 0, metadata: { total_population: 250000, languages: ['Lang5'], timezones: ['UTC+1'] } },
-      { short_name: 'CB', long_name: 'Country B', value: 0, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
+      { short_name: 'COU', long_name: 'Country B', value: 0, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
     ]);
   });
 
@@ -83,7 +83,7 @@ describe('categorizeData', () => {
     expect(result).toEqual([
       { short_name: 'CTA', long_name: 'Country A', value: 2, metadata: { total_population: 1000000, languages: ['Lang1','Lang2'], timezones: ['UTC+1','UTC+2'] } },
       { short_name: 'CTA2', long_name: 'Country A2', value: 1, metadata: { total_population: 250000, languages: ['Lang5'], timezones: ['UTC+1'] } },
-      { short_name: 'CB', long_name: 'Country B', value: 1, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
+      { short_name: 'COU', long_name: 'Country B', value: 1, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
     ]);
   });
 
@@ -92,7 +92,7 @@ describe('categorizeData', () => {
     expect(result).toEqual([
       { short_name: 'CTA', long_name: 'Country A', value: 2, metadata: { total_population: 1000000, languages: ['Lang1','Lang2'], timezones: ['UTC+1','UTC+2'] } },
       { short_name: 'CTA2', long_name: 'Country A2', value: 1, metadata: { total_population: 250000, languages: ['Lang5'], timezones: ['UTC+1'] } },
-      { short_name: 'CB', long_name: 'Country B', value: 1, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
+      { short_name: 'COU', long_name: 'Country B', value: 1, metadata: { total_population: 500000, languages: ['Lang3'], timezones: ['UTC+0'] } }
     ]);
   });
 
@@ -146,16 +146,6 @@ describe('categorizeData', () => {
     }];
     const result = categorizeData(dataWithBothCodes, 'population');
   expect(result[0].short_name).toBe('ABC');
-  });
-
-  test('should fallback to alpha2Code when alpha3Code is missing', () => {
-    const dataWithAlpha2Only = [{
-      name: 'Test',
-      alpha2Code: 'AB',
-      population: 1000
-    }];
-    const result = categorizeData(dataWithAlpha2Only, 'population');
-  expect(result[0].short_name).toBe('AB');
   });
 
   test('should fallback to name slice when codes are missing', () => {
