@@ -184,8 +184,6 @@
             const $tbody = $("#data-table tbody");
             $tbody.empty(); // Clear existing rows
             $.each(chartData, function(i, d) {
-                // console.log(`Adding row: ${d.code}, ${d.value}`);
-                // console.log(d);
                 $("<tr>")
                     .append($("<td>").addClass("border border-gray-300 p-2").text(d.long_name))
                     .append($("<td>").addClass("border border-gray-300 p-2").text(d.value))
