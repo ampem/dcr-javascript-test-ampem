@@ -27,10 +27,12 @@
             </select>
         </div>
         <svg id="chart" width="800" height="500"></svg>
+        <!-- Tooltip for bubble hover -->
+        <div id="tooltip" style="position: absolute; display: none; pointer-events: none; background: rgba(0,0,0,0.8); color: #fff; padding: 8px; border-radius: 6px; font-size: 12px; max-width: 300px; z-index: 9999;"></div>
         <table id="data-table" class="w-full mt-4 border-collapse border border-gray-300">
             <thead>
                 <tr class="bg-gray-200">
-                    <th class="border border-gray-300 p-2">Name</th>
+                    <th class="border border-gray-300 p-2">Label</th>
                     <th class="border border-gray-300 p-2">Value</th>
                 </tr>
             </thead>
@@ -94,31 +96,87 @@
             // Compute layout
             const nodes = pack(root).leaves();
 
-            // Update bubbles
-            g.selectAll(".bubble")
-                .data(nodes, d => d.data.name)
-                .join("circle")
-                .attr("class", "bubble")
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y)
-                .attr("r", d => d.r)
-                .attr("fill", "steelblue")
-                .attr("fill-opacity", 0.6)
-                .attr("stroke", "#000")
-                .attr("stroke-width", 0.5);
+                        // Update bubbles
+                        const bubbles = g.selectAll(".bubble")
+                                .data(nodes, d => d.data.short_name)
+                                .join("circle")
+                                .attr("class", "bubble")
+                                .attr("cx", d => d.x)
+                                .attr("cy", d => d.y)
+                                .attr("r", d => d.r)
+                                .attr("fill", "black")
+                                .attr("fill-opacity", 0.8)
+                                .attr("stroke", "#000")
+                                .attr("stroke-width", 0.5);
+
+                        // Tooltip behavior
+                        const tooltip = d3.select('#tooltip');
+
+                        bubbles
+                            .on('mouseover', function(event, d) {
+                                // Build tooltip HTML from metadata
+                                const md = d.data.metadata || {};
+                                const parts = [];
+                                parts.push(`<strong>${d.data.long_name} (${d.data.short_name})</strong>`);
+                                parts.push(`<div>Value: ${d.data.value}</div>`);
+                                if (md.total_population !== undefined) parts.push(`<div>Population: ${md.total_population.toLocaleString ? md.total_population.toLocaleString() : md.total_population}</div>`);
+                                if (md.languages && md.languages.length) parts.push(`<div>Languages: ${md.languages.slice(0,5).join(', ')}${md.languages.length>5? '...' : ''}</div>`);
+                                if (md.timezones && md.timezones.length) parts.push(`<div>Timezones: ${md.timezones.join(', ')}</div>`);
+                                tooltip.html(parts.join(''))
+                                    .style('display', 'block')
+                                    .style('opacity', 1);
+                            })
+                            .on('mousemove', function(event) {
+                                // Position tooltip near cursor, keep inside viewport
+                                const tooltipNode = document.getElementById('tooltip');
+                                const padding = 10;
+                                let x = event.pageX + padding;
+                                let y = event.pageY + padding;
+                                const rect = tooltipNode.getBoundingClientRect();
+                                const vw = window.innerWidth;
+                                const vh = window.innerHeight;
+                                if (x + rect.width > vw) x = event.pageX - rect.width - padding;
+                                if (y + rect.height > vh) y = event.pageY - rect.height - padding;
+                                tooltip.style('left', x + 'px').style('top', y + 'px');
+                            })
+                            .on('mouseout', function() {
+                                tooltip.style('display', 'none');
+                            });
 
             // Update labels
             g.selectAll(".label")
-                .data(nodes, d => d.data.name)
+                .data(nodes, d => d.data.long_name)
                 .join("text")
                 .attr("class", "label")
                 .attr("x", d => d.x)
                 .attr("y", d => d.y)
-                .attr("dy", "0.35em")
                 .attr("text-anchor", "middle")
                 .attr("font-size", "10px")
-                .attr("fill", "#000")
-                .text(d => d.data.name);
+                .attr("fill", "#fff")
+                .each(function(d) {
+                  const text = d3.select(this);
+                  text.selectAll("tspan").remove();
+
+                  // Only render labels for circles with radius above a threshold
+                  const minRadiusForLabel = 10; // don't show text on tiny circles
+                  if (d.r < minRadiusForLabel) return;
+
+                  // font size for label proportional to radius
+                  const labelFontSize = Math.max(8, Math.min(16, d.r / 3));
+                  const valueFontSize = Math.max(8, Math.min(14, d.r / 4));
+
+                  text.append("tspan")
+                    .attr("x", d.x)
+                    .attr("dy", "-0.6em")
+                    .attr("font-size", labelFontSize + "px")
+                    .text(d.data.short_name
+                    );
+                  text.append("tspan")
+                    .attr("x", d.x)
+                    .attr("dy", "1.2em")
+                    .attr("font-size", valueFontSize + "px")
+                    .text(d.data.value);
+                });
         }
 
         // Update jQuery table
@@ -127,7 +185,7 @@
             $tbody.empty(); // Clear existing rows
             $.each(chartData, function(i, d) {
                 $("<tr>")
-                    .append($("<td>").addClass("border border-gray-300 p-2").text(d.name))
+                    .append($("<td>").addClass("border border-gray-300 p-2").text(d.long_name))
                     .append($("<td>").addClass("border border-gray-300 p-2").text(d.value))
                     .appendTo($tbody);
             });

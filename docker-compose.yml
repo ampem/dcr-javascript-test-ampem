@@ -16,6 +16,8 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: sh -c "npm test"
+    # Keep container running for debugging/inspection
+    # Use a long-running no-op command instead of exiting after tests
+    command: ["sh", "-c", "tail -f /dev/null"]
     environment:
       - NODE_ENV=test

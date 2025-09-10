@@ -52,7 +52,7 @@ Plot the selected criteria on a "bubble" chart.
 
 Underneath the chart display the same data as shown in the chart in a table.
 
-### Exercise 3 - Extended information (incomplete)
+### Exercise 3 - Extended information (complete)
 
 When hovering over a bubble display a pop-up with more information about that country/region from the JSON data.
 
@@ -60,7 +60,12 @@ When hovering over a bubble display a pop-up with more information about that co
 
 ```bash
 docker compose build
-docker compose up
+docker compose up -d
 ```
+The chart can then be viewed at [http://localhost:8080](http://localhost:8080)
 
-The chart can then be viewed at [http://localhost:8000](http://localhost:8000)
+#### Running tests
+
+```bash
+docker compose exec test npm test
+```
