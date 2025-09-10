@@ -62,7 +62,7 @@ When hovering over a bubble display a pop-up with more information about that co
 docker compose build
 docker compose up -d
 ```
-The chart can then be viewed at (http://localhost:8080)[http://localhost:8080]
+The chart can then be viewed at [http://localhost:8080](http://localhost:8080)
 
 #### Running tests
 
