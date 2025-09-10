@@ -62,7 +62,6 @@
             const chartData = categorizeData(countriesData, category);
 
             console.log(chartData)
-            console.log(countriesData)
 
             // Update bubble chart
             updateChart(chartData);
@@ -99,7 +98,7 @@
 
             // Update bubbles
             g.selectAll(".bubble")
-                .data(nodes, d => d.data.name)
+                .data(nodes, d => d.data.short_name)
                 .join("circle")
                 .attr("class", "bubble")
                 .attr("cx", d => d.x)
@@ -112,7 +111,7 @@
 
             // Update labels
             g.selectAll(".label")
-                .data(nodes, d => d.data.label)
+                .data(nodes, d => d.data.long_name)
                 .join("text")
                 .attr("class", "label")
                 .attr("x", d => d.x)
@@ -136,7 +135,8 @@
                     .attr("x", d.x)
                     .attr("dy", "-0.6em")
                     .attr("font-size", labelFontSize + "px")
-                    .text(d.data.name);
+                    .text(d.data.short_name
+                    );
                   text.append("tspan")
                     .attr("x", d.x)
                     .attr("dy", "1.2em")
@@ -153,7 +153,7 @@
                 // console.log(`Adding row: ${d.code}, ${d.value}`);
                 // console.log(d);
                 $("<tr>")
-                    .append($("<td>").addClass("border border-gray-300 p-2").text(d.name))
+                    .append($("<td>").addClass("border border-gray-300 p-2").text(d.long_name))
                     .append($("<td>").addClass("border border-gray-300 p-2").text(d.value))
                     .appendTo($tbody);
             });

@@ -61,6 +61,7 @@ export function categorizeData(data, category) {
       long_name: region,
       value: g.count,
       metadata: {
+        test: 1,
         total_population: g.population,
         languages: Array.from(g.languages),
         timezones: Array.from(g.timezones)
@@ -87,6 +88,7 @@ export function categorizeData(data, category) {
       long_name: region,
       value: g.timezones.size,
       metadata: {
+        test: 0,
         total_population: g.population,
         languages: Array.from(g.languages),
         timezones: Array.from(g.timezones)
